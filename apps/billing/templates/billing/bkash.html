@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+<head>
+    <style>
+        html,
+        body {
+          height: 100%;
+          margin: 0;
+        }
+
+        .main_div {
+          display: flex;
+          flex-flow: column;
+          background-color: #FFF;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
+
+        #bKash_button {
+            background-color: #D8005B;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            font-family: "Helvetica";
+            border-radius: 10px;
+        }
+
+        #bKash_logo {
+            height: 100px;
+            width: 200px;
+        }
+
+
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+    </script>
+    <script src="https://scripts.pay.bka.sh/versions/1.0.000-beta/checkout/bKash-checkout.js"></script>
+</head>
+
+<body>
+    <div class="main_div">
+        <button id="bKash_button" style="display: none">Initiate Transaction</button>
+    </div>
+
+    <script>
+        $(window).on('load', function () {
+            $("#bKash_button").trigger( "click" );
+            //<h3 id="msg_err" style="color: #3B0D06; font-family: Arial;">Bkash payment will be live soon. Please use SSL for now!</h3>
+
+        });
+
+        var paymentID = '';
+        var context = JSON.parse('{{ context }}'.replace(/&#39;/g, '"').replace(/&#34;/g, '"'));
+        var paymentConfig = {
+            createCheckoutURL: context['create_payment'],
+            executeCheckoutURL: context['execute_payment'],
+        }
+
+        function before_send_ajax(xhr, settings) {
+            var csrftoken = getCookie('csrftoken');
+            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+        }
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        bKash.init({
+            paymentMode: 'checkout',
+            paymentRequest: {
+                amount: context['amount'],
+                intent: 'sale',
+                payment_uid: context['payment_uid']
+            },
+            createRequest: function (request) {
+                $.ajaxSetup({
+                    headers:{
+                        'Authorization': 'JWT ' + context['token'],
+                    },
+                    beforeSend: before_send_ajax
+                });
+
+                $.ajax({
+                    url: paymentConfig.createCheckoutURL,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(request),
+
+                    success: function(data) {
+                        if (data && data.paymentID != null) {
+                            paymentID = data.paymentID;
+                            bKash.create().onSuccess(data);
+                        } else {
+                            bKash.create().onError();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        bKash.create().onError();
+                        var msg = JSON.parse(xhr.responseText)['errorMessage'];
+                        window.location.href = context['bkash_fail_template'] + '?msg=' + msg;
+                    }
+                });
+            },
+            executeRequestOnAuthorization: function () {
+                $.ajaxSetup({
+                    headers:{
+                        'Authorization': 'JWT ' + context['token'],
+                    },
+                    beforeSend: before_send_ajax
+                });
+                $.ajax({
+                    url: paymentConfig.executeCheckoutURL,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        gateway: 1,
+                        vendor_uid: paymentID,
+                        bill_type: context['bill_type'],
+                        amount: context['amount'],
+                        extra_tasks: context['extra_tasks'],
+                        new_agents: context['new_agents'],
+                        payment_uid: context['payment_uid']
+                    }),
+
+                    success: function (data, textStatus) {
+                        /**data is the reply from execute bkash api **/
+                        //context.create_payment_result = JSON.parse(data['transactionStatus']);
+                        //alert(context.create_payment_result);
+                        window.location.href = context['bkash_success_template'];
+                    },
+                    error: function (xhr, status, error) {
+                        var msg = JSON.parse(xhr.responseText)['errorMessage'];
+                        bKash.execute().onError();//run clean up code
+                        window.location.href = context['bkash_fail_template'] + '?msg=' + msg;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

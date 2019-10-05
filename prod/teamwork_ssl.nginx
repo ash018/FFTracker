@@ -1,0 +1,32 @@
+server {
+    server_name tw.api.dingi.work;
+    listen 80;
+    return 301 https://tw.api.dingi.work$request_uri;
+}
+
+server {
+    listen 443;
+    server_name tw.api.dingi.work;
+
+    ssl on; # <-
+    ssl_certificate /home/ubuntu/teamwork/certs/tw.api.dingi.work.crt; # <-
+    ssl_certificate_key /home/ubuntu/teamwork/certs/tw.api.dingi.work.key; # <-
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location /static/ {
+            alias /home/ubuntu/teamwork/static/;
+    }
+
+    location /media/ {
+            alias /home/ubuntu/teamwork/static/media/;
+    }
+
+    location / {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto https;  # <-
+            proxy_set_header Host $http_host;
+            proxy_redirect off;
+            proxy_pass http://unix:/home/ubuntu/teamwork/conf.sock;
+    }
+}

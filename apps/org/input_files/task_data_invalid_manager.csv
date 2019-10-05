@@ -1,0 +1,8 @@
+title;duration;address;manager_id;image_required;collect_demand;other_fields
+Car wash;2;Gulshan-1, Dhaka, Bangladesh;username1;0;1;"Shop Name;Cost"
+Demand Collection;4;Gulshan-2, Dhaka, Bangladesh;username1;1;0;
+Client Visit;3;Banani, Dhaka, Bangladesh;username1;1;1;"Client Name;probability"
+Delivery;3;Uttra, Dhaka, Bangladesh;;0;1;Payment
+Payment collection;4;Rampura, Dhaka, Bangladesh;username5;1;1;Payment
+Maintenance;4;Maddha Badda, Dhaka, Bangladesh;username5;1;1;Description
+Car Trip;7;Link Road, Dhaka, Bangladesh;username5;0;1;"Fuel;Fair"

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment</title>
+    <div >
+        Message:
+    </div>
+    <div >
+        <h1 style="font-size: large">Redirecting to Payment page.....</h1>
+    </div>
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+    </script>
+</head>
+<body>
+    <script>
+        $(document).ready(function(){
+            //var host = 'http://localhost:3000/billing';
+            var host = 'https://tw.dingi.work/billing';
+            var url = host + '?status=' + '{{ status }}' + '&err_msg=' + '{{ err_msg }}';
+            window.location.href = url;
+        });
+    </script>
+</body>
+</html>

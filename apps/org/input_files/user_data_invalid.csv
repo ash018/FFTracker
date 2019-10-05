@@ -1,0 +1,10 @@
+employee_id;name;phone;email;designation;role;manager_id
+sazal;HK Hazra;+8801787164716;sazal@dingi.live;CEO;Manager;
+farhad;Farhad;+8801787164716;farhad@dingi.live;Lead;Manager;sazal
+tashfik;Tasfiq;+8801787164717;tasfik@dingi.live;Dev;Employee;farhad
+nafis;Nafis;+8801787164718;nafis@dingi.live;Dev;Employee;farhad
+firoz;Firoj;+8801787164719;firoz@dingi.live;Lead;Manager;sazal
+shakil;Shakil;+8801787164720;shakil@dingi.live;Dev;Employee;firoz
+faysal;Faysal;+8801787164721;faysal@dingi.live;Dev;Employee;firoz
+azim;Azim;+8801787164722;azim@dingi.live;Dev;Employee;farhad
+sazal;HK Hazra;+8801787164716;sazal@dingi.live;CEO;Manager;shakil
