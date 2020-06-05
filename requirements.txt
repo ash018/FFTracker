@@ -1,4 +1,4 @@
-Django==2.2
+Django==2.2.13
 djangorestframework==3.8.2
 django-debug-toolbar
 django-jinja==2.4.1
