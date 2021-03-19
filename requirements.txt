@@ -1,5 +1,5 @@
 Django==2.2
-djangorestframework==3.8.2
+djangorestframework==3.11.2
 django-debug-toolbar
 django-jinja==2.4.1
 django-querycount==0.7.0
